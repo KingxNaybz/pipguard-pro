@@ -1,1 +1,10 @@
 project_id = "kivgbkgistppjmcqpngo"
+
+[functions.bot-sync]
+verify_jwt = false
+
+[functions.bot-commands]
+verify_jwt = false
+
+[functions.bot-params]
+verify_jwt = false
