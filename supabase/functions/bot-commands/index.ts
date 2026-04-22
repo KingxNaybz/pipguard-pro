@@ -17,6 +17,15 @@ const requireSuccess = (error: { message: string } | null, context: string) => {
   if (error) throw new Error(`${context}: ${error.message}`);
 };
 
+const normalizeStatus = (value: unknown) => {
+  const status = String(value ?? "").trim().toLowerCase();
+  if (["done", "completed", "complete", "success", "succeeded", "ok"].includes(status)) return "done";
+  if (["failed", "error", "errored"].includes(status)) return "failed";
+  if (["cancelled", "canceled"].includes(status)) return "cancelled";
+  if (status === "pending") return "pending";
+  throw new Error("invalid command status");
+};
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -63,8 +72,9 @@ Deno.serve(async (req) => {
       const body = await req.json();
       const { command_id, status, result } = body;
       if (!command_id || !status) throw new Error("command_id and status required");
+      const normalizedStatus = normalizeStatus(status);
       const { error } = await sb.from("commands").update({
-        status,
+        status: normalizedStatus,
         result: result ?? null,
         completed_at: new Date().toISOString(),
       }).eq("id", command_id);
