@@ -8,6 +8,15 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
 };
 
+const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), {
+  status,
+  headers: { ...corsHeaders, "Content-Type": "application/json" },
+});
+
+const requireSuccess = (error: { message: string } | null, context: string) => {
+  if (error) throw new Error(`${context}: ${error.message}`);
+};
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -20,9 +29,7 @@ Deno.serve(async (req) => {
     const auth = req.headers.get("authorization") || req.headers.get("x-bot-key") || "";
     const token = auth.replace(/^Bearer\s+/i, "").trim();
     if (token !== BOT_API_KEY) {
-      return new Response(JSON.stringify({ error: "unauthorized" }), {
-        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return json({ error: "unauthorized" }, 401);
     }
 
     const sb = createClient(SUPABASE_URL, SERVICE_KEY);
@@ -39,15 +46,17 @@ Deno.serve(async (req) => {
         .eq("status", "pending")
         .order("created_at", { ascending: true })
         .limit(20);
-      if (error) throw error;
+      requireSuccess(error, "commands fetch failed");
 
       const ids = (data ?? []).map((c) => c.id);
       if (ids.length > 0) {
-        await sb.from("commands").update({ picked_at: new Date().toISOString() }).in("id", ids);
+        const { error: updateError } = await sb
+          .from("commands")
+          .update({ picked_at: new Date().toISOString() })
+          .in("id", ids);
+        requireSuccess(updateError, "commands picked_at update failed");
       }
-      return new Response(JSON.stringify({ commands: data ?? [] }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return json({ commands: data ?? [] });
     }
 
     if (req.method === "POST") {
@@ -59,19 +68,13 @@ Deno.serve(async (req) => {
         result: result ?? null,
         completed_at: new Date().toISOString(),
       }).eq("id", command_id);
-      if (error) throw error;
-      return new Response(JSON.stringify({ ok: true }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      requireSuccess(error, "command completion update failed");
+      return json({ ok: true });
     }
 
-    return new Response(JSON.stringify({ error: "method not allowed" }), {
-      status: 405, headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return json({ error: "method not allowed" }, 405);
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
-    return new Response(JSON.stringify({ error: msg }), {
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return json({ error: msg }, 500);
   }
 });
