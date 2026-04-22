@@ -57,6 +57,7 @@ export type Database = {
           max_trades: number
           min_rrr: number
           min_signal_strength: number
+          pair_settings: Json
           paused: boolean
           risk_percent: number
           scan_interval: number
@@ -78,6 +79,7 @@ export type Database = {
           max_trades?: number
           min_rrr?: number
           min_signal_strength?: number
+          pair_settings?: Json
           paused?: boolean
           risk_percent?: number
           scan_interval?: number
@@ -99,6 +101,7 @@ export type Database = {
           max_trades?: number
           min_rrr?: number
           min_signal_strength?: number
+          pair_settings?: Json
           paused?: boolean
           risk_percent?: number
           scan_interval?: number

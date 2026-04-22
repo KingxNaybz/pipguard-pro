@@ -1,0 +1,1 @@
+ALTER TABLE public.bot_params ADD COLUMN IF NOT EXISTS pair_settings jsonb NOT NULL DEFAULT '{}'::jsonb;
