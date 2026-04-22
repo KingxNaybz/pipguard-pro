@@ -11,6 +11,10 @@ import { TradeJournal } from "@/components/cockpit/TradeJournal";
 import { ParamsEditor } from "@/components/cockpit/ParamsEditor";
 import { AlertsFeed } from "@/components/cockpit/AlertsFeed";
 import { ConnectBotDialog } from "@/components/cockpit/ConnectBotDialog";
+import { TestConnection } from "@/components/cockpit/TestConnection";
+import { CommandHistory } from "@/components/cockpit/CommandHistory";
+import { DailyRiskCard } from "@/components/cockpit/DailyRiskCard";
+import { PairSettings } from "@/components/cockpit/PairSettings";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { LogOut, AlertOctagon } from "lucide-react";
@@ -84,6 +88,11 @@ const Index = () => {
 
           <TabsContent value="overview" className="space-y-6">
             <div className="grid gap-6 lg:grid-cols-3">
+              <DailyRiskCard />
+              <TestConnection />
+              <CommandHistory />
+            </div>
+            <div className="grid gap-6 lg:grid-cols-3">
               <div className="lg:col-span-2"><EquityChart /></div>
               <AlertsFeed />
             </div>
@@ -93,6 +102,7 @@ const Index = () => {
 
           <TabsContent value="signals" className="space-y-6">
             <SignalsGrid />
+            <PairSettings />
             <PositionsTable />
           </TabsContent>
 
@@ -103,6 +113,7 @@ const Index = () => {
 
           <TabsContent value="params" className="space-y-6">
             <ParamsEditor />
+            <PairSettings />
           </TabsContent>
         </Tabs>
 
