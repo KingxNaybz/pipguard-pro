@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import { Activity, RefreshCw, Copy, AlertTriangle, CheckCircle2, Clock } from "lucide-react";
+import { Activity, RefreshCw, Copy, AlertTriangle, CheckCircle2, Clock, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useBotState, useAlerts } from "@/lib/cockpit-data";
 import { fmtAgo } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useSession } from "@/lib/auth";
 
 const SYNC_ALERT_TYPES = ["sync", "heartbeat", "connection", "network", "error"];
 
@@ -12,11 +14,44 @@ export const HeartbeatDebug = () => {
   const state = useBotState();
   const alerts = useAlerts(50);
   const [now, setNow] = useState(() => Date.now());
+  const [refreshing, setRefreshing] = useState(false);
+  const { session } = useSession();
 
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(id);
   }, []);
+
+  const handleRefresh = async () => {
+    if (!session) {
+      toast.error("Not signed in");
+      return;
+    }
+    setRefreshing(true);
+    try {
+      const [{ data: stateRow, error: stateErr }, { data: alertRows, error: alertErr }] = await Promise.all([
+        supabase.from("bot_state").select("*").eq("user_id", session.user.id).maybeSingle(),
+        supabase.from("alerts").select("*").eq("user_id", session.user.id).order("created_at", { ascending: false }).limit(1),
+      ]);
+      if (stateErr) throw stateErr;
+      if (alertErr) throw alertErr;
+      setNow(Date.now());
+      const hb = (stateRow as any)?.last_heartbeat;
+      const ageMs = hb ? Date.now() - new Date(hb).getTime() : Infinity;
+      if (!hb) {
+        toast.message("No heartbeat yet", { description: "The bot has never reached the cloud." });
+      } else if (ageMs < 60_000) {
+        toast.success(`Live · last heartbeat ${fmtAgo(hb)}`);
+      } else {
+        toast.warning(`Offline · last heartbeat ${fmtAgo(hb)}`);
+      }
+      void alertRows;
+    } catch (e: any) {
+      toast.error(e?.message ?? "Refresh failed");
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   const lastHb = state?.last_heartbeat ? new Date(state.last_heartbeat).getTime() : 0;
   const ageMs = lastHb ? now - lastHb : Infinity;
@@ -52,8 +87,13 @@ export const HeartbeatDebug = () => {
             </p>
           </div>
         </div>
-        <Button size="sm" variant="ghost" onClick={() => setNow(Date.now())}>
-          <RefreshCw className="mr-1 h-3 w-3" /> Refresh
+        <Button size="sm" variant="ghost" onClick={handleRefresh} disabled={refreshing}>
+          {refreshing ? (
+            <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+          ) : (
+            <RefreshCw className="mr-1 h-3 w-3" />
+          )}
+          Refresh
         </Button>
       </div>
 
