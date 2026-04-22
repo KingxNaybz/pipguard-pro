@@ -109,19 +109,27 @@ const useRealtime = <T,>(
   useEffect(() => {
     if (!session) return;
     let active = true;
-    initial().then((d) => active && setData(d));
+    const refresh = async () => {
+      const next = await initial();
+      if (active) setData(next);
+    };
+
+    refresh();
 
     const channel = supabase
       .channel(`rt-${table}-${Math.random()}`)
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table, filter: filter ?? `user_id=eq.${session.user.id}` },
-        () => { initial().then((d) => active && setData(d)); },
+        refresh,
       )
       .subscribe();
 
+    const intervalId = window.setInterval(refresh, 10_000);
+
     return () => {
       active = false;
+      window.clearInterval(intervalId);
       supabase.removeChannel(channel);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
