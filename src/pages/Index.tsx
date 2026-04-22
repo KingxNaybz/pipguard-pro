@@ -15,6 +15,7 @@ import { TestConnection } from "@/components/cockpit/TestConnection";
 import { CommandHistory } from "@/components/cockpit/CommandHistory";
 import { DailyRiskCard } from "@/components/cockpit/DailyRiskCard";
 import { PairSettings } from "@/components/cockpit/PairSettings";
+import { HeartbeatDebug } from "@/components/cockpit/HeartbeatDebug";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { LogOut, AlertOctagon } from "lucide-react";
@@ -92,6 +93,7 @@ const Index = () => {
               <TestConnection />
               <CommandHistory />
             </div>
+            <HeartbeatDebug />
             <div className="grid gap-6 lg:grid-cols-3">
               <div className="lg:col-span-2"><EquityChart /></div>
               <AlertsFeed />
