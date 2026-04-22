@@ -9,6 +9,7 @@ import { fmtAgo } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 const PROJECT_URL = import.meta.env.VITE_SUPABASE_URL as string;
+const BOT_SYNC_URL = `${PROJECT_URL}/functions/v1/bot-sync`;
 
 export const ConnectBotDialog = () => {
   const { session } = useSession();
@@ -17,7 +18,7 @@ export const ConnectBotDialog = () => {
   const userId = session?.user.id ?? "<your-user-id>";
 
   const config = `# === PIPGOLD CLOUD COCKPIT CONFIG ===
-WEB_API_URL = "${PROJECT_URL}/functions/v1"
+WEB_API_URL = "${BOT_SYNC_URL}"
 USER_ID     = "${userId}"
 BOT_API_KEY = "<paste your BOT_API_KEY here>"`;
 
@@ -46,7 +47,7 @@ BOT_API_KEY = "<paste your BOT_API_KEY here>"`;
     return {
       icon: Radio,
       title: "Waiting for first heartbeat",
-      message: "This button only opens the setup instructions. The cockpit will connect after you paste this config into pipgold_coinexx.py and run the bot on your VPS or PC.",
+        message: "This button only opens the setup instructions. The cockpit will connect after you paste this config into pipgold_coinexx.py and run the bot on your VPS or PC. The URL must end with /bot-sync.",
       tone: "border-border bg-surface-2 text-muted-foreground",
     };
   }, [state?.last_heartbeat]);
@@ -98,7 +99,7 @@ BOT_API_KEY = "<paste your BOT_API_KEY here>"`;
 
           <div className="space-y-2 text-xs text-muted-foreground">
             <p><strong className="text-foreground">1.</strong> Download <code className="rounded bg-surface-2 px-1.5 py-0.5 font-mono">pipgold_coinexx.py</code>.</p>
-            <p><strong className="text-foreground">2.</strong> Replace the config block at the top of the file and add your BOT_API_KEY.</p>
+            <p><strong className="text-foreground">2.</strong> Replace the config block at the top of the file and add your BOT_API_KEY. Make sure <code className="rounded bg-surface-2 px-1.5 py-0.5 font-mono">WEB_API_URL</code> ends with <code className="rounded bg-surface-2 px-1.5 py-0.5 font-mono">/bot-sync</code>.</p>
             <p><strong className="text-foreground">3.</strong> Run <code className="rounded bg-surface-2 px-1.5 py-0.5 font-mono">python pipgold_coinexx.py</code> on your Windows VPS or PC with MT5 open.</p>
             <p><strong className="text-foreground">4.</strong> Leave this dialog open if you want — the status above will update automatically when the first heartbeat arrives.</p>
           </div>
