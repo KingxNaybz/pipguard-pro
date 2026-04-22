@@ -93,6 +93,7 @@ export type BotParams = {
   gold_sl_multiplier: number;
   paused: boolean;
   enabled_pairs: string[];
+  pair_settings: Record<string, { max_spread?: number; min_freshness_sec?: number }>;
   version: number;
   updated_at: string;
 };
