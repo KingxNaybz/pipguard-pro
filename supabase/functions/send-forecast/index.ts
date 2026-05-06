@@ -24,16 +24,18 @@ Deno.serve(async (req) => {
       return json({ error: "TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID secrets not configured" }, 400);
     }
 
-    // Authenticate the calling user
+    const sb = createClient(SUPABASE_URL, SERVICE_KEY);
+
+    // Try to identify user (auth header optional while login is disabled)
+    let userId: string | null = null;
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader) return json({ error: "missing authorization" }, 401);
-
-    const sb = createClient(SUPABASE_URL, SERVICE_KEY, {
-      global: { headers: { Authorization: authHeader } },
-    });
-    const { data: { user } } = await sb.auth.getUser();
-    if (!user) return json({ error: "unauthorized" }, 401);
-
+    if (authHeader && !authHeader.includes(Deno.env.get("SUPABASE_ANON_KEY") ?? "____")) {
+      const sbAuth = createClient(SUPABASE_URL, SERVICE_KEY, {
+        global: { headers: { Authorization: authHeader } },
+      });
+      const { data } = await sbAuth.auth.getUser();
+      userId = data.user?.id ?? null;
+    }
     let bodyText = "";
     try {
       const body = await req.json();
@@ -41,16 +43,23 @@ Deno.serve(async (req) => {
     } catch (_e) { /* no body */ }
 
     if (!bodyText) {
-      // Build text from latest forecasts in DB
-      const { data: forecasts } = await sb
-        .from("bot_forecasts")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("scanned_at", { ascending: false })
-        .limit(50);
+      // Build text from latest forecasts in DB (only if we know which user)
+      let forecasts: any[] = [];
+      if (userId) {
+        const { data } = await sb
+          .from("bot_forecasts")
+          .select("*")
+          .eq("user_id", userId)
+          .order("scanned_at", { ascending: false })
+          .limit(50);
+        forecasts = data ?? [];
+      }
 
       const lines = ["<b>📊 PIPGOLD FORECAST</b>", ""];
-      for (const f of (forecasts ?? [])) {
+      if (forecasts.length === 0) {
+        lines.push("<i>No forecasts available yet.</i>");
+      }
+      for (const f of forecasts) {
         const dir = String(f.direction).toUpperCase();
         const arrow = dir.startsWith("S") ? "🔻" : "🔺";
         const status = String(f.status ?? "WATCHING").toUpperCase();
