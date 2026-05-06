@@ -130,6 +130,13 @@ Deno.serve(async (req) => {
       stateUpdate.losses_today = asNumber(statePayload.losses_today ?? statePayload.lossesToday);
       stateUpdate.scan_count = asNumber(statePayload.scan_count ?? statePayload.scanCount);
       stateUpdate.bot_version = asNullableString(statePayload.bot_version ?? statePayload.botVersion);
+      if (statePayload.paused !== undefined) stateUpdate.paused = asBoolean(statePayload.paused);
+      if (statePayload.dry_run !== undefined || statePayload.dryRun !== undefined)
+        stateUpdate.dry_run = asBoolean(statePayload.dry_run ?? statePayload.dryRun);
+      if (statePayload.weekly_anchor !== undefined || statePayload.weeklyAnchor !== undefined)
+        stateUpdate.weekly_anchor = asNumber(statePayload.weekly_anchor ?? statePayload.weeklyAnchor);
+      if (statePayload.monthly_anchor !== undefined || statePayload.monthlyAnchor !== undefined)
+        stateUpdate.monthly_anchor = asNumber(statePayload.monthly_anchor ?? statePayload.monthlyAnchor);
     }
 
     const { error: stateError } = await sb.from("bot_state").upsert(stateUpdate, { onConflict: "user_id" });
@@ -183,6 +190,9 @@ Deno.serve(async (req) => {
           indicators: asObject(sig.indicators) ?? {},
           spread: asNullableNumber(sig.spread),
           regime: asNullableString(sig.regime),
+          net_edge: asNumber(sig.net_edge ?? sig.netEdge),
+          patterns: Array.isArray(sig.patterns) ? sig.patterns.map(String) : [],
+          h1_trend: asNullableString(sig.h1_trend ?? sig.h1Trend),
           scanned_at: asString(sig.scanned_at ?? sig.scannedAt, now),
         }))
         .filter((row) => row.symbol);
@@ -210,6 +220,8 @@ Deno.serve(async (req) => {
           profit: asNumber(t.profit),
           win: asBoolean(t.win),
           signal_strength: asNullableNumber(t.signal_strength ?? t.signalStrength),
+          regime: asNullableString(t.regime),
+          close_reason: asNullableString(t.close_reason ?? t.closeReason),
           opened_at: asString(t.opened_at ?? t.openedAt, now),
           closed_at: asString(t.closed_at ?? t.closedAt, now),
         }))
