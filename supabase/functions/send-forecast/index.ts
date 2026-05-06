@@ -24,16 +24,18 @@ Deno.serve(async (req) => {
       return json({ error: "TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID secrets not configured" }, 400);
     }
 
-    // Authenticate the calling user
+    const sb = createClient(SUPABASE_URL, SERVICE_KEY);
+
+    // Try to identify user (auth header optional while login is disabled)
+    let userId: string | null = null;
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader) return json({ error: "missing authorization" }, 401);
-
-    const sb = createClient(SUPABASE_URL, SERVICE_KEY, {
-      global: { headers: { Authorization: authHeader } },
-    });
-    const { data: { user } } = await sb.auth.getUser();
-    if (!user) return json({ error: "unauthorized" }, 401);
-
+    if (authHeader && !authHeader.includes(Deno.env.get("SUPABASE_ANON_KEY") ?? "____")) {
+      const sbAuth = createClient(SUPABASE_URL, SERVICE_KEY, {
+        global: { headers: { Authorization: authHeader } },
+      });
+      const { data } = await sbAuth.auth.getUser();
+      userId = data.user?.id ?? null;
+    }
     let bodyText = "";
     try {
       const body = await req.json();
