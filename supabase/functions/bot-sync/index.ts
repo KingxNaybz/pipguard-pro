@@ -233,6 +233,34 @@ Deno.serve(async (req) => {
       }
     }
 
+    const forecasts = asArray(body.forecast ?? body.forecasts);
+    if (Array.isArray(body.forecast ?? body.forecasts)) {
+      const { error: delErr } = await sb.from("bot_forecasts").delete().eq("user_id", user_id);
+      requireSuccess(delErr, "forecasts prune failed");
+      if (forecasts.length > 0) {
+        const rows = forecasts.map((f) => ({
+          user_id,
+          symbol: asString(f.symbol).trim(),
+          direction: asString(f.direction, "BUY").toUpperCase(),
+          strength: asNullableString(f.strength),
+          net_edge: asNumber(f.net_edge ?? f.netEdge),
+          status: asString(f.status, "WATCHING"),
+          regime: asNullableString(f.regime),
+          entry_zone: asNullableString(f.entry_zone ?? f.entryZone),
+          sl: asNullableNumber(f.sl),
+          tp: asNullableNumber(f.tp),
+          rrr: asNullableNumber(f.rrr),
+          rsi: asNullableNumber(f.rsi),
+          patterns: Array.isArray(f.patterns) ? f.patterns.map(String) : [],
+          scanned_at: asString(f.scanned_at ?? f.scannedAt, now),
+        })).filter((r) => r.symbol);
+        if (rows.length > 0) {
+          const { error } = await sb.from("bot_forecasts").insert(rows);
+          requireSuccess(error, "forecasts insert failed");
+        }
+      }
+    }
+
     const alerts = asArray(body.alerts);
     if (Array.isArray(body.alerts) && alerts.length > 0) {
       const rows = alerts.map((a) => ({
@@ -256,6 +284,7 @@ Deno.serve(async (req) => {
         signals: signals.length,
         trades: trades.length,
         alerts: alerts.length,
+        forecasts: forecasts.length,
       },
     });
   } catch (e) {
