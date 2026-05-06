@@ -43,16 +43,23 @@ Deno.serve(async (req) => {
     } catch (_e) { /* no body */ }
 
     if (!bodyText) {
-      // Build text from latest forecasts in DB
-      const { data: forecasts } = await sb
-        .from("bot_forecasts")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("scanned_at", { ascending: false })
-        .limit(50);
+      // Build text from latest forecasts in DB (only if we know which user)
+      let forecasts: any[] = [];
+      if (userId) {
+        const { data } = await sb
+          .from("bot_forecasts")
+          .select("*")
+          .eq("user_id", userId)
+          .order("scanned_at", { ascending: false })
+          .limit(50);
+        forecasts = data ?? [];
+      }
 
       const lines = ["<b>📊 PIPGOLD FORECAST</b>", ""];
-      for (const f of (forecasts ?? [])) {
+      if (forecasts.length === 0) {
+        lines.push("<i>No forecasts available yet.</i>");
+      }
+      for (const f of forecasts) {
         const dir = String(f.direction).toUpperCase();
         const arrow = dir.startsWith("S") ? "🔻" : "🔺";
         const status = String(f.status ?? "WATCHING").toUpperCase();
