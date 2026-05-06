@@ -218,13 +218,6 @@ export const useBotParams = () => {
   });
 };
 
-export const sendCommand = async (
-  type: "close_all" | "close_profit" | "close_one" | "pause" | "resume" | "flatten_symbol",
-  payload: Record<string, any> = {},
-) => {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("not authenticated");
-  const { error } = await supabase.from("commands").insert({ user_id: user.id, type, payload });
 export const useForecasts = () => {
   const { session } = useSession();
   return useRealtime<Forecast[]>("bot_forecasts", async () => {
