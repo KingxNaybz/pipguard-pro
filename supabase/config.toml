@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.heartbeat-watchdog]
 verify_jwt = false
+
+[functions.send-forecast]
+verify_jwt = false
