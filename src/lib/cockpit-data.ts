@@ -21,6 +21,10 @@ export type BotState = {
   last_heartbeat: string | null;
   bot_version: string | null;
   updated_at: string;
+  paused: boolean;
+  dry_run: boolean;
+  weekly_anchor: number;
+  monthly_anchor: number;
 };
 
 export type Position = {
@@ -47,6 +51,9 @@ export type Signal = {
   indicators: Record<string, any>;
   spread: number | null;
   regime: string | null;
+  net_edge: number;
+  patterns: string[];
+  h1_trend: string | null;
   scanned_at: string;
 };
 
@@ -62,8 +69,27 @@ export type Trade = {
   profit: number;
   win: boolean;
   signal_strength: number | null;
+  regime: string | null;
+  close_reason: string | null;
   opened_at: string;
   closed_at: string;
+};
+
+export type Forecast = {
+  id: string;
+  symbol: string;
+  direction: string;
+  strength: string | null;
+  net_edge: number;
+  status: string;
+  regime: string | null;
+  entry_zone: string | null;
+  sl: number | null;
+  tp: number | null;
+  rrr: number | null;
+  rsi: number | null;
+  patterns: string[];
+  scanned_at: string;
 };
 
 export type Alert = {
@@ -194,6 +220,26 @@ export const useBotParams = () => {
 
 export const sendCommand = async (
   type: "close_all" | "close_profit" | "close_one" | "pause" | "resume" | "flatten_symbol",
+  payload: Record<string, any> = {},
+) => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("not authenticated");
+  const { error } = await supabase.from("commands").insert({ user_id: user.id, type, payload });
+export const useForecasts = () => {
+  const { session } = useSession();
+  return useRealtime<Forecast[]>("bot_forecasts", async () => {
+    if (!session) return [];
+    const { data } = await supabase
+      .from("bot_forecasts")
+      .select("*")
+      .eq("user_id", session.user.id)
+      .order("scanned_at", { ascending: false });
+    return (data as Forecast[]) ?? [];
+  });
+};
+
+export const sendCommand = async (
+  type: "close_all" | "close_profit" | "close_one" | "pause" | "resume" | "flatten_symbol" | "set_dry_run" | "send_forecast",
   payload: Record<string, any> = {},
 ) => {
   const { data: { user } } = await supabase.auth.getUser();
