@@ -16,6 +16,9 @@ import { CommandHistory } from "@/components/cockpit/CommandHistory";
 import { DailyRiskCard } from "@/components/cockpit/DailyRiskCard";
 import { PairSettings } from "@/components/cockpit/PairSettings";
 import { HeartbeatDebug } from "@/components/cockpit/HeartbeatDebug";
+import { ForecastScanner } from "@/components/cockpit/ForecastScanner";
+import { RiskDashboard } from "@/components/cockpit/RiskDashboard";
+import { PerformanceAnalytics } from "@/components/cockpit/PerformanceAnalytics";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { LogOut, AlertOctagon } from "lucide-react";
@@ -80,10 +83,13 @@ const Index = () => {
 
         {/* Tabs */}
         <Tabs defaultValue="overview" className="space-y-4">
-          <TabsList className="bg-surface-2">
+          <TabsList className="bg-surface-2 flex h-auto flex-wrap">
             <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="forecast">Forecast</TabsTrigger>
             <TabsTrigger value="signals">Signals</TabsTrigger>
             <TabsTrigger value="journal">Journal</TabsTrigger>
+            <TabsTrigger value="risk">Risk</TabsTrigger>
+            <TabsTrigger value="analytics">Analytics</TabsTrigger>
             <TabsTrigger value="params">Parameters</TabsTrigger>
           </TabsList>
 
@@ -102,6 +108,10 @@ const Index = () => {
             <PerPairStats />
           </TabsContent>
 
+          <TabsContent value="forecast" className="space-y-6">
+            <ForecastScanner />
+          </TabsContent>
+
           <TabsContent value="signals" className="space-y-6">
             <SignalsGrid />
             <PairSettings />
@@ -113,6 +123,14 @@ const Index = () => {
             <TradeJournal />
           </TabsContent>
 
+          <TabsContent value="risk" className="space-y-6">
+            <RiskDashboard />
+          </TabsContent>
+
+          <TabsContent value="analytics" className="space-y-6">
+            <PerformanceAnalytics />
+          </TabsContent>
+
           <TabsContent value="params" className="space-y-6">
             <ParamsEditor />
             <PairSettings />
@@ -120,7 +138,7 @@ const Index = () => {
         </Tabs>
 
         <footer className="pt-4 text-center text-[10px] uppercase tracking-widest text-muted-foreground">
-          PipGold Ultra · cockpit synced via Lovable Cloud
+          PipGold Ultra v3 · cockpit synced via Lovable Cloud
         </footer>
       </main>
     </div>

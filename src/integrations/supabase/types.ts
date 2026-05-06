@@ -44,6 +44,63 @@ export type Database = {
         }
         Relationships: []
       }
+      bot_forecasts: {
+        Row: {
+          created_at: string
+          direction: string
+          entry_zone: string | null
+          id: string
+          net_edge: number
+          patterns: string[]
+          regime: string | null
+          rrr: number | null
+          rsi: number | null
+          scanned_at: string
+          sl: number | null
+          status: string
+          strength: string | null
+          symbol: string
+          tp: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          direction: string
+          entry_zone?: string | null
+          id?: string
+          net_edge?: number
+          patterns?: string[]
+          regime?: string | null
+          rrr?: number | null
+          rsi?: number | null
+          scanned_at?: string
+          sl?: number | null
+          status?: string
+          strength?: string | null
+          symbol: string
+          tp?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          direction?: string
+          entry_zone?: string | null
+          id?: string
+          net_edge?: number
+          patterns?: string[]
+          regime?: string | null
+          rrr?: number | null
+          rsi?: number | null
+          scanned_at?: string
+          sl?: number | null
+          status?: string
+          strength?: string | null
+          symbol?: string
+          tp?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       bot_params: {
         Row: {
           atr_multiplier: number
@@ -121,6 +178,7 @@ export type Database = {
           currency: string
           daily_drawdown: number
           daily_pl: number
+          dry_run: boolean
           equity: number
           free_margin: number
           halt_reason: string | null
@@ -128,10 +186,13 @@ export type Database = {
           last_heartbeat: string | null
           losses_today: number
           margin: number
+          monthly_anchor: number
+          paused: boolean
           scan_count: number
           trades_today: number
           updated_at: string
           user_id: string
+          weekly_anchor: number
           wins_today: number
         }
         Insert: {
@@ -141,6 +202,7 @@ export type Database = {
           currency?: string
           daily_drawdown?: number
           daily_pl?: number
+          dry_run?: boolean
           equity?: number
           free_margin?: number
           halt_reason?: string | null
@@ -148,10 +210,13 @@ export type Database = {
           last_heartbeat?: string | null
           losses_today?: number
           margin?: number
+          monthly_anchor?: number
+          paused?: boolean
           scan_count?: number
           trades_today?: number
           updated_at?: string
           user_id: string
+          weekly_anchor?: number
           wins_today?: number
         }
         Update: {
@@ -161,6 +226,7 @@ export type Database = {
           currency?: string
           daily_drawdown?: number
           daily_pl?: number
+          dry_run?: boolean
           equity?: number
           free_margin?: number
           halt_reason?: string | null
@@ -168,10 +234,13 @@ export type Database = {
           last_heartbeat?: string | null
           losses_today?: number
           margin?: number
+          monthly_anchor?: number
+          paused?: boolean
           scan_count?: number
           trades_today?: number
           updated_at?: string
           user_id?: string
+          weekly_anchor?: number
           wins_today?: number
         }
         Relationships: []
@@ -268,8 +337,11 @@ export type Database = {
       }
       signals: {
         Row: {
+          h1_trend: string | null
           id: string
           indicators: Json
+          net_edge: number
+          patterns: string[]
           regime: string | null
           scanned_at: string
           side: string | null
@@ -279,8 +351,11 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          h1_trend?: string | null
           id?: string
           indicators?: Json
+          net_edge?: number
+          patterns?: string[]
           regime?: string | null
           scanned_at?: string
           side?: string | null
@@ -290,8 +365,11 @@ export type Database = {
           user_id: string
         }
         Update: {
+          h1_trend?: string | null
           id?: string
           indicators?: Json
+          net_edge?: number
+          patterns?: string[]
           regime?: string | null
           scanned_at?: string
           side?: string | null
@@ -304,6 +382,7 @@ export type Database = {
       }
       trades: {
         Row: {
+          close_reason: string | null
           closed_at: string
           created_at: string
           entry: number
@@ -313,6 +392,7 @@ export type Database = {
           opened_at: string
           pips: number
           profit: number
+          regime: string | null
           side: string
           signal_strength: number | null
           sl: number | null
@@ -323,6 +403,7 @@ export type Database = {
           win: boolean
         }
         Insert: {
+          close_reason?: string | null
           closed_at: string
           created_at?: string
           entry: number
@@ -332,6 +413,7 @@ export type Database = {
           opened_at: string
           pips?: number
           profit?: number
+          regime?: string | null
           side: string
           signal_strength?: number | null
           sl?: number | null
@@ -342,6 +424,7 @@ export type Database = {
           win?: boolean
         }
         Update: {
+          close_reason?: string | null
           closed_at?: string
           created_at?: string
           entry?: number
@@ -351,6 +434,7 @@ export type Database = {
           opened_at?: string
           pips?: number
           profit?: number
+          regime?: string | null
           side?: string
           signal_strength?: number | null
           sl?: number | null
