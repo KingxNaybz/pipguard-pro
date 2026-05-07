@@ -23,27 +23,34 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { LogOut, AlertOctagon } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 
 const Index = () => {
   const state = useBotState();
   const ddPct = state && state.equity ? (Number(state.daily_drawdown) / Number(state.equity)) * 100 : 0;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       {/* Header */}
-      <header className="border-b border-border bg-surface-1/60 backdrop-blur-sm">
+      <header className="sticky top-0 z-40 glass border-b border-glass-border/0">
         <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-4 px-4 py-3 lg:px-8">
           <div className="flex items-center gap-3">
-            <div className="h-8 w-8 rounded gradient-gold shadow-glow" />
+            <div className="relative h-9 w-9 rounded-lg gradient-gold shadow-glow flex items-center justify-center">
+              <span className="font-mono text-xs font-black text-primary-foreground">PG</span>
+              <span className="absolute inset-0 rounded-lg ring-1 ring-primary/40 pulse-glow" />
+            </div>
             <div>
-              <h1 className="font-mono text-base font-bold leading-none tracking-tight">PIPGOLD <span className="text-primary">ULTRA</span></h1>
-              <p className="mt-1 text-[10px] uppercase tracking-widest text-muted-foreground">Remote Cockpit</p>
+              <h1 className="font-mono text-sm font-bold leading-none tracking-[0.18em]">
+                PIPGOLD <span className="neon-text-primary">ULTRA</span>
+              </h1>
+              <p className="mt-1 text-[10px] uppercase tracking-[0.25em] text-muted-foreground">Cockpit · v3</p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <HeartbeatPill />
             <ConnectBotDialog />
-            <Button variant="ghost" size="icon" onClick={() => supabase.auth.signOut()}>
+            <ThemeSwitcher />
+            <Button variant="ghost" size="icon" onClick={() => supabase.auth.signOut()} aria-label="Sign out">
               <LogOut className="h-4 w-4" />
             </Button>
           </div>
@@ -83,7 +90,7 @@ const Index = () => {
 
         {/* Tabs */}
         <Tabs defaultValue="overview" className="space-y-4">
-          <TabsList className="bg-surface-2 flex h-auto flex-wrap">
+          <TabsList className="glass flex h-auto flex-wrap p-1 gap-1">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="forecast">Forecast</TabsTrigger>
             <TabsTrigger value="signals">Signals</TabsTrigger>
