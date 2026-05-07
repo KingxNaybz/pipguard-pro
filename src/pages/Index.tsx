@@ -11,6 +11,7 @@ import { TradeJournal } from "@/components/cockpit/TradeJournal";
 import { ParamsEditor } from "@/components/cockpit/ParamsEditor";
 import { AlertsFeed } from "@/components/cockpit/AlertsFeed";
 import { ConnectBotDialog } from "@/components/cockpit/ConnectBotDialog";
+import { StartBotDialog } from "@/components/cockpit/StartBotDialog";
 import { TestConnection } from "@/components/cockpit/TestConnection";
 import { CommandHistory } from "@/components/cockpit/CommandHistory";
 import { DailyRiskCard } from "@/components/cockpit/DailyRiskCard";
@@ -48,6 +49,7 @@ const Index = () => {
           </div>
           <div className="flex items-center gap-2">
             <HeartbeatPill />
+            <StartBotDialog />
             <ConnectBotDialog />
             <ThemeSwitcher />
             <Button variant="ghost" size="icon" onClick={() => supabase.auth.signOut()} aria-label="Sign out">
