@@ -24,6 +24,14 @@ export const useSession = () => {
 };
 
 export const RequireAuth = ({ children }: { children: React.ReactNode }) => {
-  // Auth temporarily disabled for development
+  const { session, loading } = useSession();
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+  if (!session) return <Navigate to="/auth" replace />;
   return <>{children}</>;
 };
