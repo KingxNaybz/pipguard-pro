@@ -103,6 +103,37 @@ export const ParamsEditor = () => {
       </div>
 
       <div className="border-t border-border p-5">
+        <h3 className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground">Profit Management</h3>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {PROFIT_TOGGLE_FIELDS.map((f) => (
+            <div key={f.key} className="flex items-start justify-between gap-3 rounded-md border border-border bg-surface-2 px-3 py-2.5">
+              <div className="min-w-0">
+                <Label className="text-xs">{f.label}</Label>
+                {f.help && <p className="mt-0.5 text-[10px] text-muted-foreground">{f.help}</p>}
+              </div>
+              <Switch
+                checked={!!draft[f.key]}
+                onCheckedChange={(v) => setDraft({ ...draft, [f.key]: v })}
+              />
+            </div>
+          ))}
+          {PROFIT_NUMERIC_FIELDS.map((f) => (
+            <div key={f.key} className="space-y-1.5">
+              <Label className="text-xs">{f.label}</Label>
+              <Input
+                type="number"
+                step={f.step ?? "any"}
+                value={draft[f.key] ?? ""}
+                onChange={(e) => setDraft({ ...draft, [f.key]: Number(e.target.value) })}
+                className="font-mono"
+              />
+              {f.help && <p className="text-[10px] text-muted-foreground">{f.help}</p>}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="border-t border-border p-5">
         <Label className="mb-2 block text-xs uppercase tracking-widest text-muted-foreground">Enabled pairs</Label>
         <div className="flex flex-wrap gap-2">
           {ALL_PAIRS.map((p) => {
