@@ -5,6 +5,7 @@ import { useSession } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { Save, Loader2 } from "lucide-react";
 
@@ -25,6 +26,19 @@ const FIELDS: { key: string; label: string; step?: number; help?: string }[] = [
   { key: "sl_max", label: "Max SL pips", step: 1 },
   { key: "atr_multiplier", label: "ATR multiplier", step: 0.1 },
   { key: "gold_sl_multiplier", label: "Gold SL multiplier", step: 0.1 },
+];
+
+const PROFIT_NUMERIC_FIELDS: { key: string; label: string; step?: number; help?: string }[] = [
+  { key: "tp_multiplier", label: "TP multiplier", step: 0.1, help: "Take-profit = SL distance × this" },
+  { key: "trailing_stop_activation_pips", label: "Trailing activation (pips)", step: 1, help: "Activate trail after N pips profit" },
+  { key: "trailing_stop_distance_pips", label: "Trailing distance (pips)", step: 1, help: "Pips behind price the stop trails" },
+  { key: "break_even_activation_pips", label: "Break-even activation (pips)", step: 1, help: "Move SL to entry after N pips profit" },
+  { key: "daily_profit_target", label: "Daily profit target (USD)", step: 1, help: "0 = disabled" },
+];
+
+const PROFIT_TOGGLE_FIELDS: { key: string; label: string; help?: string }[] = [
+  { key: "use_trailing_stop", label: "Use trailing stop", help: "Trail SL behind price as it moves in your favor" },
+  { key: "use_break_even", label: "Use break-even", help: "Move SL to entry once trade is in profit" },
 ];
 
 export const ParamsEditor = () => {
