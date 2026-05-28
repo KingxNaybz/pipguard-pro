@@ -104,7 +104,9 @@ export type Database = {
       bot_params: {
         Row: {
           atr_multiplier: number
+          break_even_activation_pips: number
           daily_loss_limit: number
+          daily_profit_target: number
           enabled_pairs: string[]
           gold_sl_multiplier: number
           max_consecutive_losses: number
@@ -120,13 +122,20 @@ export type Database = {
           scan_interval: number
           sl_max: number
           sl_min: number
+          tp_multiplier: number
+          trailing_stop_activation_pips: number
+          trailing_stop_distance_pips: number
           updated_at: string
+          use_break_even: boolean
+          use_trailing_stop: boolean
           user_id: string
           version: number
         }
         Insert: {
           atr_multiplier?: number
+          break_even_activation_pips?: number
           daily_loss_limit?: number
+          daily_profit_target?: number
           enabled_pairs?: string[]
           gold_sl_multiplier?: number
           max_consecutive_losses?: number
@@ -142,13 +151,20 @@ export type Database = {
           scan_interval?: number
           sl_max?: number
           sl_min?: number
+          tp_multiplier?: number
+          trailing_stop_activation_pips?: number
+          trailing_stop_distance_pips?: number
           updated_at?: string
+          use_break_even?: boolean
+          use_trailing_stop?: boolean
           user_id: string
           version?: number
         }
         Update: {
           atr_multiplier?: number
+          break_even_activation_pips?: number
           daily_loss_limit?: number
+          daily_profit_target?: number
           enabled_pairs?: string[]
           gold_sl_multiplier?: number
           max_consecutive_losses?: number
@@ -164,7 +180,12 @@ export type Database = {
           scan_interval?: number
           sl_max?: number
           sl_min?: number
+          tp_multiplier?: number
+          trailing_stop_activation_pips?: number
+          trailing_stop_distance_pips?: number
           updated_at?: string
+          use_break_even?: boolean
+          use_trailing_stop?: boolean
           user_id?: string
           version?: number
         }

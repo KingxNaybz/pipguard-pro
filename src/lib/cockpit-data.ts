@@ -117,6 +117,13 @@ export type BotParams = {
   sl_max: number;
   atr_multiplier: number;
   gold_sl_multiplier: number;
+  tp_multiplier: number;
+  use_trailing_stop: boolean;
+  trailing_stop_activation_pips: number;
+  trailing_stop_distance_pips: number;
+  use_break_even: boolean;
+  break_even_activation_pips: number;
+  daily_profit_target: number;
   paused: boolean;
   enabled_pairs: string[];
   pair_settings: Record<string, { max_spread?: number; min_freshness_sec?: number }>;
